@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import { ArrowRight, MapPin, Globe } from "lucide-react";
 import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
 
