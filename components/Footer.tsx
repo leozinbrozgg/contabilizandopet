@@ -75,17 +75,19 @@ export default function Footer() {
             <h3 className="font-bold text-white text-sm mb-5">Serviços</h3>
             <ul className="space-y-3">
               {[
-                { label: "Contabilidade Digital", href: "#servicos" },
-                { label: "Contabilidade", href: "#servicos" },
-                { label: "Inteligência Financeira", href: "#servicos" },
-                { label: "Soluções Tecnológicas", href: "#servicos" },
-              ].map((l) => (
-                <li key={l.label}>
+                "Abertura de empresa",
+                "Trocar de contador",
+                "Contabilidade completa",
+                "Migrar de MEI para ME",
+                "Certificado digital",
+                "Planejamento tributário",
+              ].map((nome) => (
+                <li key={nome}>
                   <a
-                    href={l.href}
+                    href="#servicos"
                     className="text-white/50 hover:text-white text-sm transition-colors"
                   >
-                    {l.label}
+                    {nome}
                   </a>
                 </li>
               ))}
