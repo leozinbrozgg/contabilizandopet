@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, MessageCircle, Clock, ArrowRight } from "lucide-react";
+import { ArrowLeft, MessageCircle, Clock, ArrowRight, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { Lead, HistoricoLead } from "@/types";
 
@@ -67,6 +67,8 @@ export default function LeadDetalhes({
   const [salvando, setSalvando] = useState(false);
   const [msgOk, setMsgOk] = useState(false);
   const [historicoLocal, setHistoricoLocal] = useState(historico);
+  const [confirmarExclusao, setConfirmarExclusao] = useState(false);
+  const [excluindo, setExcluindo] = useState(false);
   const router = useRouter();
 
   async function salvarStatus(novoStatus: string) {
@@ -109,6 +111,17 @@ export default function LeadDetalhes({
     setSalvando(false);
   }
 
+  async function excluirLead() {
+    setExcluindo(true);
+    const res = await fetch(`/api/crm/leads/${lead.id}`, { method: "DELETE" });
+    if (res.ok) {
+      router.push("/crm/leads");
+    } else {
+      setExcluindo(false);
+      setConfirmarExclusao(false);
+    }
+  }
+
   return (
     <div className="p-6 lg:p-8 max-w-5xl">
       <Link href="/crm/leads" className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-600 mb-6 transition-colors">
@@ -130,15 +143,24 @@ export default function LeadDetalhes({
               </div>
             </div>
           </div>
-          <a
-            href={`https://wa.me/55${lead.whatsapp.replace(/\D/g, "")}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors shadow-sm"
-          >
-            <MessageCircle className="w-4 h-4" />
-            Abrir no WhatsApp
-          </a>
+          <div className="flex items-center gap-2">
+            <a
+              href={`https://wa.me/55${lead.whatsapp.replace(/\D/g, "")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors shadow-sm"
+            >
+              <MessageCircle className="w-4 h-4" />
+              Abrir no WhatsApp
+            </a>
+            <button
+              onClick={() => setConfirmarExclusao(true)}
+              className="inline-flex items-center gap-2 border border-red-200 text-red-500 hover:bg-red-50 text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors"
+            >
+              <Trash2 className="w-4 h-4" />
+              Excluir
+            </button>
+          </div>
         </div>
       </div>
 
@@ -239,5 +261,37 @@ export default function LeadDetalhes({
         </div>
       </div>
     </div>
+
+    {/* Modal de confirmação de exclusão */}
+    {confirmarExclusao && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+        <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-sm">
+          <div className="w-11 h-11 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Trash2 className="w-5 h-5 text-red-500" />
+          </div>
+          <h3 className="text-base font-bold text-gray-900 text-center mb-1">Excluir lead?</h3>
+          <p className="text-sm text-gray-400 text-center mb-6">
+            <span className="font-semibold text-gray-600">{lead.nome}</span> e todo o histórico serão
+            removidos permanentemente. Essa ação não pode ser desfeita.
+          </p>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setConfirmarExclusao(false)}
+              disabled={excluindo}
+              className="flex-1 border border-gray-200 text-gray-600 text-sm font-semibold py-2.5 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-40"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={excluirLead}
+              disabled={excluindo}
+              className="flex-1 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors disabled:opacity-60"
+            >
+              {excluindo ? "Excluindo..." : "Sim, excluir"}
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
   );
 }
