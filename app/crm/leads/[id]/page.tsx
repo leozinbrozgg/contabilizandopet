@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import pool from "@/lib/db";
 import { notFound } from "next/navigation";
 import LeadDetalhes from "./LeadDetalhes";

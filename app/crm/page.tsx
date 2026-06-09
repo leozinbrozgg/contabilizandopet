@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import pool from "@/lib/db";
 import Link from "next/link";
 import { Users, TrendingUp, CheckCircle2, Clock, ArrowRight, MessageCircle } from "lucide-react";

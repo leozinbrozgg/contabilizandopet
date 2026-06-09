@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import pool from "@/lib/db";
 import Link from "next/link";
 import { MessageCircle, Search } from "lucide-react";
