@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Mail, Lock, CheckCircle2 } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
 
 const beneficios = [
   "Visualize e gerencie todos os leads",
@@ -18,20 +17,23 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
   const router = useRouter();
-  const supabase = createClient();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErro("");
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password: senha,
+
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, senha }),
     });
-    if (error) {
-      setErro("E-mail ou senha incorretos.");
-    } else {
+
+    if (res.ok) {
       router.push("/crm");
+    } else {
+      const data = await res.json();
+      setErro(data.error ?? "E-mail ou senha incorretos.");
     }
     setLoading(false);
   }

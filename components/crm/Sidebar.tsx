@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LayoutDashboard, Users, LogOut } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
 
 const navItems = [
   { href: "/crm", icon: LayoutDashboard, label: "Dashboard" },
@@ -14,17 +13,15 @@ const navItems = [
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const supabase = createClient();
 
   async function handleLogout() {
-    await supabase.auth.signOut();
+    await fetch("/api/auth/logout", { method: "POST" });
     router.push("/login");
   }
 
   return (
     <aside className="w-64 min-h-screen bg-brand-blue flex flex-col">
 
-      {/* Logo */}
       <div className="p-6 border-b border-white/10">
         <div className="inline-block mb-3">
           <Image
@@ -40,7 +37,6 @@ export default function Sidebar() {
         </p>
       </div>
 
-      {/* Nav */}
       <nav className="flex-1 p-4 space-y-1">
         {navItems.map(({ href, icon: Icon, label }) => {
           const active = pathname === href || (href !== "/crm" && pathname.startsWith(href));
@@ -61,7 +57,6 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Logout */}
       <div className="p-4 border-t border-white/10">
         <button
           onClick={handleLogout}

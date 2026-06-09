@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, MessageCircle, Clock, ArrowRight } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import type { Lead, HistoricoLead } from "@/types";
 
@@ -68,7 +67,6 @@ export default function LeadDetalhes({
   const [salvando, setSalvando] = useState(false);
   const [msgOk, setMsgOk] = useState(false);
   const [historicoLocal, setHistoricoLocal] = useState(historico);
-  const supabase = createClient();
   const router = useRouter();
 
   async function salvarStatus(novoStatus: string) {
@@ -76,16 +74,18 @@ export default function LeadDetalhes({
     setSalvando(true);
     const statusAnterior = status;
 
-    const { data } = await supabase.rpc("cpd_update_status", {
-      p_id: lead.id,
-      p_status_novo: novoStatus,
-      p_status_anterior: statusAnterior,
+    const res = await fetch(`/api/crm/leads/${lead.id}/status`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status_novo: novoStatus, status_anterior: statusAnterior }),
     });
 
-    setStatus(novoStatus as Lead["status"]);
-    const row = (data as HistoricoLead[] | null)?.[0];
-    if (row) setHistoricoLocal([row, ...historicoLocal]);
-    router.refresh();
+    if (res.ok) {
+      const row: HistoricoLead = await res.json();
+      setStatus(novoStatus as Lead["status"]);
+      setHistoricoLocal([row, ...historicoLocal]);
+      router.refresh();
+    }
     setSalvando(false);
   }
 
@@ -93,28 +93,29 @@ export default function LeadDetalhes({
     if (!observacao.trim()) return;
     setSalvando(true);
 
-    const { data } = await supabase.rpc("cpd_add_observacao", {
-      p_lead_id: lead.id,
-      p_observacao: observacao.trim(),
+    const res = await fetch(`/api/crm/leads/${lead.id}/observacao`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ observacao: observacao.trim() }),
     });
 
-    const row = (data as HistoricoLead[] | null)?.[0];
-    if (row) setHistoricoLocal([row, ...historicoLocal]);
-    setObservacao("");
-    setMsgOk(true);
-    setTimeout(() => setMsgOk(false), 2000);
+    if (res.ok) {
+      const row: HistoricoLead = await res.json();
+      setHistoricoLocal([row, ...historicoLocal]);
+      setObservacao("");
+      setMsgOk(true);
+      setTimeout(() => setMsgOk(false), 2000);
+    }
     setSalvando(false);
   }
 
   return (
     <div className="p-6 lg:p-8 max-w-5xl">
-      {/* Breadcrumb */}
       <Link href="/crm/leads" className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-600 mb-6 transition-colors">
         <ArrowLeft className="w-4 h-4" />
         Leads
       </Link>
 
-      {/* Header card */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-4">
@@ -142,7 +143,6 @@ export default function LeadDetalhes({
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Dados */}
         <div className="lg:col-span-2 space-y-5">
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
             <div className="px-6 py-4 border-b border-gray-50">
@@ -158,7 +158,6 @@ export default function LeadDetalhes({
             </div>
           </div>
 
-          {/* Observação */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
             <h2 className="text-sm font-bold text-gray-700 mb-4">Adicionar observação</h2>
             <textarea
@@ -183,9 +182,7 @@ export default function LeadDetalhes({
           </div>
         </div>
 
-        {/* Status + Histórico */}
         <div className="space-y-5">
-          {/* Status */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
             <h2 className="text-sm font-bold text-gray-700 mb-4">Alterar status</h2>
             <div className="space-y-2">
@@ -211,7 +208,6 @@ export default function LeadDetalhes({
             </div>
           </div>
 
-          {/* Histórico */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
             <h2 className="text-sm font-bold text-gray-700 mb-4">Histórico</h2>
             {!historicoLocal.length ? (

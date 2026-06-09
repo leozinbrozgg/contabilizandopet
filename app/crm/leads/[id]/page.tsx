@@ -1,23 +1,27 @@
-import { createClient } from "@/lib/supabase/server";
+import pool from "@/lib/db";
 import { notFound } from "next/navigation";
 import LeadDetalhes from "./LeadDetalhes";
 import type { Lead, HistoricoLead } from "@/types";
 
 export default async function LeadPage({ params }: { params: { id: string } }) {
-  const supabase = createClient();
+  const id = parseInt(params.id, 10);
+  if (isNaN(id)) notFound();
 
-  const [{ data: leadRaw }, { data: historicoRaw }] = await Promise.all([
-    supabase.rpc("cpd_get_lead", { p_id: params.id }),
-    supabase.rpc("cpd_get_historico", { p_lead_id: params.id }),
+  const [leadResult, historicoResult] = await Promise.all([
+    pool.query<Lead>(`SELECT * FROM leads_consultoria WHERE id = $1`, [id]),
+    pool.query<HistoricoLead>(
+      `SELECT * FROM leads_historico WHERE lead_id = $1 ORDER BY criado_em DESC`,
+      [id]
+    ),
   ]);
 
-  const lead = (leadRaw as Lead[] | null)?.[0];
+  const lead = leadResult.rows[0];
   if (!lead) notFound();
 
   return (
     <LeadDetalhes
       lead={lead}
-      historico={(historicoRaw ?? []) as HistoricoLead[]}
+      historico={historicoResult.rows}
     />
   );
 }

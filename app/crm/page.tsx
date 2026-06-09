@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import pool from "@/lib/db";
 import Link from "next/link";
 import { Users, TrendingUp, CheckCircle2, Clock, ArrowRight, MessageCircle } from "lucide-react";
 import type { Lead } from "@/types";
@@ -34,19 +34,17 @@ function fmt(d: string) {
 }
 
 export default async function DashboardPage() {
-  const supabase = createClient();
-
-  const [{ data: statsRaw }, { data: leadsRaw }] = await Promise.all([
-    supabase.rpc("cpd_get_stats"),
-    supabase.rpc("cpd_get_leads", { p_status: null, p_busca: null }),
+  const [statsResult, leadsResult] = await Promise.all([
+    pool.query(`SELECT status, COUNT(*) AS contagem FROM leads_consultoria GROUP BY status`),
+    pool.query(`SELECT * FROM leads_consultoria ORDER BY criado_em DESC LIMIT 50`),
   ]);
 
   const contagem: Record<string, number> = {};
-  (statsRaw ?? []).forEach((r: { status: string; contagem: number }) => {
+  statsResult.rows.forEach((r: { status: string; contagem: string }) => {
     contagem[r.status] = Number(r.contagem);
   });
 
-  const leads: Lead[] = (leadsRaw ?? []) as Lead[];
+  const leads: Lead[] = leadsResult.rows as Lead[];
   const total = leads.length;
   const novos = contagem["Novo"] ?? 0;
   const convertidos = contagem["Convertido"] ?? 0;
@@ -57,13 +55,11 @@ export default async function DashboardPage() {
 
   return (
     <div className="p-6 lg:p-8">
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
         <p className="text-sm text-gray-400 mt-0.5">Visão geral dos leads de consultoria</p>
       </div>
 
-      {/* Métricas */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
           { label: "Total de leads", value: total, icon: Users, iconBg: "bg-brand-blue/10", iconColor: "text-brand-blue" },
@@ -84,7 +80,6 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Leads recentes */}
         <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm">
           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-50">
             <h2 className="text-sm font-bold text-gray-700">Leads recentes</h2>
@@ -115,7 +110,6 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* Breakdown por status */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
           <div className="px-6 py-4 border-b border-gray-50">
             <h2 className="text-sm font-bold text-gray-700">Por status</h2>
@@ -139,7 +133,6 @@ export default async function DashboardPage() {
             })}
           </div>
 
-          {/* WhatsApp contato rápido */}
           <div className="mx-4 mb-4 mt-2">
             <a
               href="https://wa.me/5511930238204"

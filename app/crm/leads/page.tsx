@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import pool from "@/lib/db";
 import Link from "next/link";
 import { MessageCircle, Search } from "lucide-react";
 import type { Lead } from "@/types";
@@ -38,18 +38,18 @@ export default async function LeadsPage({
 }: {
   searchParams: { status?: string; busca?: string };
 }) {
-  const supabase = createClient();
+  const { rows } = await pool.query<Lead>(
+    `SELECT * FROM leads_consultoria
+     WHERE ($1::text IS NULL OR status = $1)
+       AND ($2::text IS NULL OR nome ILIKE '%' || $2 || '%' OR whatsapp ILIKE '%' || $2 || '%')
+     ORDER BY criado_em DESC`,
+    [searchParams.status || null, searchParams.busca || null]
+  );
 
-  const { data: leadsRaw } = await supabase.rpc("cpd_get_leads", {
-    p_status: searchParams.status || null,
-    p_busca: searchParams.busca || null,
-  });
-
-  const leads: Lead[] = (leadsRaw ?? []) as Lead[];
+  const leads = rows;
 
   return (
     <div className="p-6 lg:p-8">
-      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Leads</h1>
@@ -57,7 +57,6 @@ export default async function LeadsPage({
         </div>
       </div>
 
-      {/* Filtros */}
       <form className="flex flex-wrap gap-3 mb-6">
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
@@ -87,7 +86,6 @@ export default async function LeadsPage({
         )}
       </form>
 
-      {/* Tabela */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         {!leads.length ? (
           <div className="text-center py-16">
