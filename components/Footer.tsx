@@ -112,13 +112,13 @@ export default function Footer() {
             <ul className="space-y-3">
               <li>
                 <a
-                  href="https://contabilizandopetdigital.com.br"
+                  href="https://contabilizandodigital.com.br"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-white/50 hover:text-white text-sm transition-colors"
                 >
                   <Globe className="w-4 h-4 flex-shrink-0" />
-                  contabilizandopetdigital.com.br
+                  contabilizandodigital.com.br
                 </a>
               </li>
               <li>
