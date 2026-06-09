@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { signToken } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,29 +19,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "E-mail ou senha incorretos." }, { status: 401 });
     }
 
-    const payload = btoa(
-      JSON.stringify({ email: adminEmail, exp: Date.now() + 604_800_000 })
-    );
-
-    const secret = process.env.CRM_JWT_SECRET ?? "fallback";
-    let token = payload;
-
-    try {
-      const key = await crypto.subtle.importKey(
-        "raw",
-        new TextEncoder().encode(secret),
-        { name: "HMAC", hash: "SHA-256" },
-        false,
-        ["sign"]
-      );
-      const sig = await crypto.subtle.sign(
-        "HMAC", key, new TextEncoder().encode(payload)
-      );
-      const sigB64 = btoa(String.fromCharCode(...Array.from(new Uint8Array(sig))));
-      token = `${payload}.${sigB64}`;
-    } catch {
-      // crypto.subtle indisponível — usa payload sem assinatura
-    }
+    // Usa signToken do lib/auth — gera JWT de 3 partes (header.body.sig)
+    // compatível com verifyToken usado em todos os endpoints protegidos
+    const token = await signToken({ email: adminEmail });
 
     const res = NextResponse.json({ success: true });
     res.cookies.set("crm_token", token, {
