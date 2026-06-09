@@ -28,6 +28,11 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  const extras: string[] = [];
+  if (body.tipo_negocio_outro?.trim()) extras.push(`Tipo (outro): ${body.tipo_negocio_outro.trim()}`);
+  if (body.qtd_nfs_mes?.trim()) extras.push(`NFs/mês: ${body.qtd_nfs_mes}`);
+  const mensagemCompleta = [body.mensagem?.trim(), ...extras].filter(Boolean).join("\n") || null;
+
   const { error } = await supabase.rpc("insert_lead_cpd", {
     p_nome: body.nome.trim(),
     p_whatsapp: body.whatsapp.trim(),
@@ -36,7 +41,7 @@ export async function POST(request: NextRequest) {
     p_faturamento_mensal: body.faturamento_mensal,
     p_emite_nota: body.emite_nota,
     p_principal_necessidade: body.principal_necessidade,
-    p_mensagem: body.mensagem?.trim() || null,
+    p_mensagem: mensagemCompleta,
   });
 
   if (error) {
@@ -46,7 +51,7 @@ export async function POST(request: NextRequest) {
 
   const webhookUrl = process.env.WEBHOOK_WHATSAPP_URL;
   if (webhookUrl) {
-    const mensagemWebhook = `🐾 *Novo lead - Consultoria Grátis Pet*\n\nNome: ${body.nome}\nWhatsApp: ${body.whatsapp}\nTipo de negócio: ${body.tipo_negocio}\nSituação: ${body.situacao_empresa}\nFaturamento: ${body.faturamento_mensal}\nEmite nota fiscal: ${body.emite_nota}\nNecessidade: ${body.principal_necessidade}\nMensagem: ${body.mensagem || "—"}`;
+    const mensagemWebhook = `🐾 *Novo lead - Consultoria Gratuita Pet*\n\nNome: ${body.nome}\nWhatsApp: ${body.whatsapp}\nTipo de negócio: ${body.tipo_negocio}${body.tipo_negocio_outro ? ` (${body.tipo_negocio_outro})` : ""}\nSituação: ${body.situacao_empresa}\nFaturamento: ${body.faturamento_mensal}\nEmite nota fiscal: ${body.emite_nota}\nNFs/mês: ${body.qtd_nfs_mes || "—"}\nNecessidade: ${body.principal_necessidade}\nMensagem: ${body.mensagem || "—"}`;
     try {
       await fetch(webhookUrl, {
         method: "POST",

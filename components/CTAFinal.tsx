@@ -39,14 +39,14 @@ export default function CTAFinal() {
               className="flex items-center justify-between bg-brand-orange hover:bg-orange-600 text-white font-semibold px-7 py-5 rounded-2xl transition-colors group"
             >
               <div>
-                <p className="text-lg font-bold">Consultoria Grátis</p>
+                <p className="text-lg font-bold">Consultoria Gratuita</p>
                 <p className="text-white/70 text-sm font-normal">Preencha o formulário e retornamos em breve</p>
               </div>
               <ArrowRight className="w-6 h-6 flex-shrink-0 group-hover:translate-x-1 transition-transform" />
             </a>
 
             <a
-              href="https://wa.me/5511930238204"
+              href="https://wa.me/5511930238204?text=Ol%C3%A1%21+Gostaria+de+saber+mais+sobre+a+Contabilizando+Pet+Digital."
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-between bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold px-7 py-5 rounded-2xl transition-colors group"

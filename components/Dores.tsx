@@ -43,14 +43,14 @@ export default function Dores() {
         <div className="bg-brand-blue rounded-2xl p-8 flex flex-col sm:flex-row items-center justify-between gap-6">
           <p className="text-white text-lg font-medium max-w-xl">
             Se você se identificou com algum desses pontos, a{" "}
-            <span className="text-brand-orange font-bold">Consultoria Grátis</span>{" "}
+            <span className="text-brand-orange font-bold">Consultoria Gratuita</span>{" "}
             pode indicar o melhor caminho para sua empresa.
           </p>
           <a
             href="#consultoria"
             className="flex items-center gap-2 bg-brand-orange hover:bg-orange-600 text-white font-semibold px-7 py-4 rounded-xl transition-colors whitespace-nowrap flex-shrink-0"
           >
-            Quero uma Consultoria Grátis
+            Quero uma Consultoria Gratuita
             <ArrowRight className="w-4 h-4" />
           </a>
         </div>

@@ -40,11 +40,11 @@ export default function Hero() {
               href="#consultoria"
               className="inline-flex items-center justify-center gap-2 bg-brand-orange hover:bg-orange-600 text-white font-semibold px-8 py-4 rounded-xl transition-colors text-lg shadow-lg shadow-brand-orange/30"
             >
-              Solicitar Consultoria Grátis
+              Solicitar Consultoria Gratuita
               <ArrowRight className="w-5 h-5" />
             </a>
             <a
-              href="https://wa.me/5511930238204"
+              href="https://wa.me/5511930238204?text=Ol%C3%A1%21+Gostaria+de+falar+com+um+especialista+da+Contabilizando+Pet+Digital."
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold px-8 py-4 rounded-xl transition-colors text-lg"

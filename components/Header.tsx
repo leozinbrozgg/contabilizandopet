@@ -52,7 +52,7 @@ export default function Header() {
               href="#consultoria"
               className="bg-brand-orange hover:bg-orange-600 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors whitespace-nowrap"
             >
-              Consultoria Grátis
+              Consultoria Gratuita
             </a>
             <button
               className="lg:hidden text-white p-1"

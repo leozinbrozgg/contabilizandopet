@@ -30,12 +30,19 @@ const planos = [
     precos: { servico: "257", comercio: "497" },
     destaque: false,
     badge: null,
-    itens: [
-      "Até 5 notas fiscais/mês",
-      "Pró-labore até 2 sócios",
-      "Faturamento até R$ 250 mil/ano",
-      "Folha de pagamento à parte",
-    ],
+    itens: {
+      servico: [
+        "Até 5 notas fiscais/mês",
+        "Pró-labore até 2 sócios",
+        "Faturamento até R$ 250 mil/ano",
+        "Folha de pagamento à parte",
+      ],
+      comercio: [
+        "Pró-labore até 2 sócios",
+        "Faturamento até R$ 250 mil/ano",
+        "Folha de pagamento à parte",
+      ],
+    },
     cta: "Quero o plano Start",
     msgs: {
       servico: "Olá! Tenho interesse no Plano START Serviços (R$ 257/mês) da Contabilizando Pet Digital. Podem me ajudar?",
@@ -47,15 +54,25 @@ const planos = [
     precos: { servico: "387", comercio: "847" },
     destaque: true,
     badge: "Mais escolhido",
-    itens: [
-      "Tudo do Plano Start",
-      "Até 10 notas fiscais/mês",
-      "Pró-labore até 3 sócios",
-      "Relatórios trimestrais",
-      "Entrega de CNDs",
-      "Faturamento até R$ 720 mil/ano",
-      "Folha de pagamento à parte",
-    ],
+    itens: {
+      servico: [
+        "Tudo do Plano Start",
+        "Até 10 notas fiscais/mês",
+        "Pró-labore até 3 sócios",
+        "Relatórios trimestrais",
+        "Entrega de CNDs",
+        "Faturamento até R$ 720 mil/ano",
+        "Folha de pagamento à parte",
+      ],
+      comercio: [
+        "Tudo do Plano Start",
+        "Pró-labore até 3 sócios",
+        "Relatórios trimestrais",
+        "Entrega de CNDs",
+        "Faturamento até R$ 720 mil/ano",
+        "Folha de pagamento à parte",
+      ],
+    },
     cta: "Quero o plano Smart",
     msgs: {
       servico: "Olá! Tenho interesse no Plano SMART Serviços (R$ 387/mês) da Contabilizando Pet Digital. Podem me ajudar?",
@@ -67,15 +84,25 @@ const planos = [
     precos: { servico: "697", comercio: "1.497" },
     destaque: false,
     badge: null,
-    itens: [
-      "Tudo do Plano Smart",
-      "Até 20 notas fiscais/mês",
-      "Pró-labore até 4 sócios",
-      "Relatórios mensais",
-      "Pesquisa de situação fiscal",
-      "Folha até 5 funcionários",
-      "Faturamento até R$ 1,8 mi/ano",
-    ],
+    itens: {
+      servico: [
+        "Tudo do Plano Smart",
+        "Até 20 notas fiscais/mês",
+        "Pró-labore até 4 sócios",
+        "Relatórios mensais",
+        "Pesquisa de situação fiscal",
+        "Folha até 5 funcionários",
+        "Faturamento até R$ 1,8 mi/ano",
+      ],
+      comercio: [
+        "Tudo do Plano Smart",
+        "Pró-labore até 4 sócios",
+        "Relatórios mensais",
+        "Pesquisa de situação fiscal",
+        "Folha até 5 funcionários",
+        "Faturamento até R$ 1,8 mi/ano",
+      ],
+    },
     cta: "Quero o plano Performance",
     msgs: {
       servico: "Olá! Tenho interesse no Plano PERFORMANCE Serviços (R$ 697/mês) da Contabilizando Pet Digital. Podem me ajudar?",
@@ -129,6 +156,7 @@ export default function Planos() {
             const preco = plano.precos[tab];
             const msg = plano.msgs[tab];
             const href = `https://wa.me/${WPP}?text=${encodeURIComponent(msg)}`;
+            const itensTab = plano.itens[tab];
             return (
               <div
                 key={plano.nome}
@@ -163,7 +191,7 @@ export default function Planos() {
 
                 {/* Itens */}
                 <ul className="px-7 py-6 space-y-3.5 flex-1">
-                  {plano.itens.map((item) => (
+                  {itensTab.map((item) => (
                     <li key={item} className="flex items-start gap-3 text-sm text-gray-600">
                       <div className="w-5 h-5 rounded-full bg-brand-orange/10 flex items-center justify-center flex-shrink-0 mt-0.5">
                         <Check className="w-3 h-3 text-brand-orange" strokeWidth={2.5} />

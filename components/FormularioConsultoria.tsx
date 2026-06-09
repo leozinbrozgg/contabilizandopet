@@ -10,9 +10,11 @@ const initialState = {
   nome: "",
   whatsapp: "",
   tipo_negocio: "",
+  tipo_negocio_outro: "",
   situacao_empresa: "",
   faturamento_mensal: "",
   emite_nota: "",
+  qtd_nfs_mes: "",
   principal_necessidade: "",
   mensagem: "",
 };
@@ -97,11 +99,11 @@ export default function FormularioConsultoria() {
           {/* Painel esquerdo — info */}
           <div className="bg-brand-blue px-8 py-14 sm:px-12 flex flex-col justify-center">
             <span className="inline-block bg-brand-orange/20 text-brand-orange text-xs font-semibold uppercase tracking-widest px-4 py-2 rounded-full mb-6 self-start">
-              Consultoria Grátis
+              Consultoria Gratuita
             </span>
 
             <h2 className="text-3xl sm:text-4xl font-bold text-white leading-tight mb-5">
-              Consultoria Grátis para o seu Negócio Pet
+              Consultoria Gratuita para o seu Negócio Pet
             </h2>
 
             <p className="text-white/60 text-base leading-relaxed mb-10">
@@ -161,6 +163,14 @@ export default function FormularioConsultoria() {
                   </select>
                 </Field>
 
+                {form.tipo_negocio === "Outro" && (
+                  <Field label="Qual tipo de negócio?" icon={Store}>
+                    <input type="text" name="tipo_negocio_outro" value={form.tipo_negocio_outro}
+                      onChange={handleChange} placeholder="Descreva seu tipo de negócio"
+                      className={inputClass} />
+                  </Field>
+                )}
+
                 <Field label="Situação atual *" icon={Building2}>
                   <select name="situacao_empresa" value={form.situacao_empresa} onChange={handleChange} required className={selectClass}>
                     <option value="">Qual é sua situação hoje?</option>
@@ -194,6 +204,17 @@ export default function FormularioConsultoria() {
                   </Field>
                 </div>
 
+                <Field label="Quantas NFs emite por mês?" icon={FileText}>
+                  <select name="qtd_nfs_mes" value={form.qtd_nfs_mes} onChange={handleChange} className={selectClass}>
+                    <option value="">Selecione a quantidade...</option>
+                    <option>Não emito</option>
+                    <option>1 a 5</option>
+                    <option>6 a 10</option>
+                    <option>11 a 20</option>
+                    <option>Mais de 20</option>
+                  </select>
+                </Field>
+
                 <Field label="Principal necessidade *" icon={Target}>
                   <select name="principal_necessidade" value={form.principal_necessidade} onChange={handleChange} required className={selectClass}>
                     <option value="">O que você mais precisa agora?</option>
@@ -225,7 +246,7 @@ export default function FormularioConsultoria() {
 
                 <button type="submit" disabled={loading}
                   className="w-full bg-brand-orange hover:bg-orange-600 disabled:opacity-60 text-white font-semibold py-4 rounded-xl transition-colors text-base shadow-lg shadow-brand-orange/30">
-                  {loading ? "Enviando..." : "Solicitar Consultoria Grátis"}
+                  {loading ? "Enviando..." : "Solicitar Consultoria Gratuita"}
                 </button>
               </form>
             )}
