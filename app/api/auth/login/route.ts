@@ -1,26 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import pool from "@/lib/db";
-import bcrypt from "bcryptjs";
 import { signToken } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
     const { email, senha } = await request.json();
 
-    if (!email?.trim() || !senha?.trim()) {
-      return NextResponse.json({ error: "Credenciais inválidas." }, { status: 401 });
-    }
+    const adminEmail = (process.env.CRM_ADMIN_EMAIL ?? "").toLowerCase().trim();
+    const adminSenha = process.env.CRM_ADMIN_SENHA ?? "";
 
-    const { rows } = await pool.query(
-      "SELECT senha_hash FROM crm_users WHERE email = $1",
-      [email.trim().toLowerCase()]
-    );
-
-    if (!rows[0] || !(await bcrypt.compare(senha, rows[0].senha_hash))) {
+    if (
+      !email || !senha ||
+      email.trim().toLowerCase() !== adminEmail ||
+      senha !== adminSenha
+    ) {
       return NextResponse.json({ error: "E-mail ou senha incorretos." }, { status: 401 });
     }
 
-    const token = await signToken({ email: email.trim().toLowerCase() });
+    const token = await signToken({ email: adminEmail });
 
     const response = NextResponse.json({ success: true });
     response.cookies.set("crm_token", token, {
@@ -33,7 +29,7 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (err) {
-    console.error("[login] erro:", err);
-    return NextResponse.json({ error: "Erro interno. Tente novamente." }, { status: 500 });
+    console.error("[login]", err);
+    return NextResponse.json({ error: "Erro interno." }, { status: 500 });
   }
 }
